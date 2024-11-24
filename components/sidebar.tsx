@@ -1,9 +1,11 @@
 'use client'
 
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAuth } from "@/contexts/auth-context";
 import {
   FileText,
   LayoutDashboard,
+  LogOut,
   PieChart,
   Receipt,
   Settings,
@@ -12,7 +14,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
-import { UserMenu } from "./user-menu";
+import { Button } from "./ui/button";
 
 const sidebarLinks = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -26,6 +28,8 @@ export function Sidebar() {
   const pathname = usePathname()
   const isActive = (href: string) => pathname === href
 
+
+  const { logout } = useAuth()
   return (
     <div className="hidden border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">
       <div className="flex h-full max-h-screen flex-col gap-2">
@@ -51,8 +55,11 @@ export function Sidebar() {
                 </Link>
               );
             })}
+            <Button variant="outline" className="w-full" onClick={logout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
           </div>
-          <UserMenu />
         </ScrollArea>
       </div>
     </div>

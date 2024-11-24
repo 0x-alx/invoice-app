@@ -4,11 +4,15 @@ import { NextResponse } from 'next/server'
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|public|login|signup).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|assets|public|login|signup).*)',
   ],
 }
 
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith('/assets')) {
+    return NextResponse.next()
+  }
+
   const token = request.cookies.get('auth-token')?.value
   console.log('Middleware - Path:', request.nextUrl.pathname)
   console.log('Middleware - Token exists:', !!token)

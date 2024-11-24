@@ -1,5 +1,4 @@
 import { Sidebar } from "@/components/sidebar";
-import { ThemeProvider } from "@/components/theme-provider";
 import { getCurrentUser } from '@/lib/auth';
 import { Loader2 } from 'lucide-react';
 import type { Metadata } from "next";
@@ -35,13 +34,6 @@ export default async function DashboardLayout({
         <Suspense fallback={<Loader2 className="animate-spin" />}>
           <AuthCheck />
         </Suspense>
-
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
           <div className="flex h-screen overflow-hidden">
             <Sidebar />
             <main className="flex-1 overflow-y-auto bg-background">
@@ -50,7 +42,6 @@ export default async function DashboardLayout({
               </Suspense>
             </main>
           </div>
-        </ThemeProvider>
     </>
   );
 }

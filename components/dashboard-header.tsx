@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 
 export function DashboardHeader() {
   return (
@@ -10,10 +8,6 @@ export function DashboardHeader() {
           Welcome back! Here's an overview of your business.
         </p>
       </div>
-      <Button className="w-full md:w-auto">
-        <Plus className="mr-2 h-4 w-4" />
-        New Invoice
-      </Button>
     </div>
   );
 }

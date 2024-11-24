@@ -64,8 +64,8 @@ export const SignupPage = () => {
           <Image
             src="/assets/printing_invoice.svg"
             alt="Sign up"
-            width={200}
-            height={200}
+            width={300}
+            height={300}
             className="mx-auto"
           />
           <h2 className="mt-6 text-3xl font-bold">Create your account</h2>
