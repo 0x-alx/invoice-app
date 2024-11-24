@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
+import { UserMenu } from "./user-menu";
 
 const sidebarLinks = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -51,6 +52,7 @@ export function Sidebar() {
               );
             })}
           </div>
+          <UserMenu />
         </ScrollArea>
       </div>
     </div>

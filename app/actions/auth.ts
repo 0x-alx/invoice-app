@@ -48,7 +48,7 @@ export const login = async (email: string, password: string): Promise<AuthError 
       maxAge: 60 * 60 * 24 // 24 hours
     })
 
-    redirect('/invoices')
+    redirect('/')
   } catch (error) {
     return { message: 'An error occurred during login' }
   }

@@ -52,7 +52,7 @@ export const LoginPage = () => {
         return
       }
 
-      router.push('/invoices')
+      router.push('/')
       router.refresh()
     } catch (err) {
       setError('An unexpected error occurred')

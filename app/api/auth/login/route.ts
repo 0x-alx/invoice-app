@@ -14,8 +14,9 @@ const hashPassword = (password: string) => {
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json()
-    console.log(email, password)
+    const { email, password, redirectTo } = await request.json()
+    console.log('Login attempt for email:', email)
+    
     const user = await prisma.user.findUnique({
       where: { email },
       select: {
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
     })
     
     if (!user) {
+      console.log('User not found')
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -34,6 +36,7 @@ export async function POST(request: Request) {
 
     const hashedPassword = hashPassword(password)
     if (user.password !== hashedPassword) {
+      console.log('Invalid password')
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -50,14 +53,21 @@ export async function POST(request: Request) {
       .sign(SECRET_KEY)
 
     // Set HTTP-only cookie
-    cookies().set('auth-token', token, {
+    const cookieStore = cookies()
+    cookieStore.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 // 24 hours
+      maxAge: 60 * 60 * 24, // 24 hours
+      path: '/', // Make sure to set the path
     })
 
-    return NextResponse.json({ success: true })
+    console.log('Login successful, token set')
+
+    return NextResponse.json({ 
+      success: true, 
+      redirectTo: redirectTo || '/dashboard'
+    })
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(

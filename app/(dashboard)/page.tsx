@@ -1,5 +1,5 @@
-import { DashboardHeader } from "@/components/dashboard-header";
 import { DashboardCharts } from "@/components/dashboard-charts";
+import { DashboardHeader } from "@/components/dashboard-header";
 import { RecentInvoices } from "@/components/recent-invoices";
 import { TopCustomers } from "@/components/top-customers";
 
