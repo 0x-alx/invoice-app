@@ -5,14 +5,16 @@ export const metadata = {
   description: "Modern invoice management system",
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <div className="min-h-screen bg-gray-50">
+          {children}
+        </div>
+      </body>
     </html>
   )
 }
+
+export default AuthLayout

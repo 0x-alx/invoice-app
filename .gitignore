@@ -26,6 +26,9 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
+.env.*
+!.env.example
 
 # vercel
 .vercel
@@ -36,3 +39,8 @@ next-env.d.ts
 
 .cursorrules
 .bolt
+
+# prisma
+prisma/dev.db
+prisma/dev.db-journal
+prisma/migrations

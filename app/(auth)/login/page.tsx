@@ -1,49 +1,133 @@
 'use client'
 
-import { LoginForm } from '@/components/login/login-form'
-import { SignUpForm } from '@/components/login/signup-form'
+import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
-export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true)
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+})
+
+type LoginForm = z.infer<typeof loginSchema>
+
+export const LoginPage = () => {
+  const [error, setError] = useState<string>('')
+  const router = useRouter()
+  
+  const form = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  const onSubmit = async (data: LoginForm) => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        setError(result.error)
+        return
+      }
+
+      router.push('/invoices')
+      router.refresh()
+    } catch (err) {
+      setError('An unexpected error occurred')
+    }
+  }
 
   return (
-    <div className="flex min-h-screen">
-      {/* Left side - Illustration */}
-      <div className="relative hidden w-1/2 lg:block">
-        <Image
-          src="/placeholder.svg?height=1080&width=1080"
-          alt="SaaS Illustration"
-          layout="fill"
-          objectFit="cover"
-          priority
-        />
-      </div>
-      
-      {/* Right side - Auth Form */}
-      <div className="flex w-full items-center justify-center lg:w-1/2">
-        <div className="w-full max-w-md space-y-8 px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-              {isLogin ? 'Welcome back' : 'Create an account'}
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              {isLogin ? 'Please sign in to your account' : 'Sign up to get started'}
-            </p>
-          </div>
-          {isLogin ? <LoginForm /> : <SignUpForm />}
-          <div className="text-center">
-            <button 
-              onClick={() => setIsLogin(!isLogin)} 
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Log in"}
-            </button>
-          </div>
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
+          <Image
+            src="/assets/printing_invoice.svg"
+            alt="Login"
+            width={200}
+            height={200}
+            className="mx-auto"
+          />
+          <h2 className="mt-6 text-3xl font-bold">Welcome back</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Please sign in to your account
+          </p>
         </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {error && (
+              <div className="rounded-md bg-red-50 p-4 text-sm text-red-500">
+                {error}
+              </div>
+            )}
+            
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="email@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? 'Signing in...' : 'Sign in'}
+            </Button>
+          </form>
+        </Form>
+
+        <p className="text-center text-sm text-gray-600">
+          Don't have an account?{' '}
+          <Link href="/signup" className="font-medium text-primary hover:underline">
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   )
 }
+
+export default LoginPage
 
