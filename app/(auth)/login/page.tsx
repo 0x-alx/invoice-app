@@ -77,7 +77,7 @@ export default function LoginPage() {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-authBackground p-4 rounded-lg">
             {error && (
               <div className="rounded-md bg-red-50 p-4 text-sm text-red-500">
                 {error}
