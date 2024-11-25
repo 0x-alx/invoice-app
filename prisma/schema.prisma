@@ -18,4 +18,60 @@ model User {
   lastName      String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  customers     Customer[]
+}
+
+model Customer {
+  id            String    @id @default(cuid())
+  name          String
+  email         String
+  phone         String?
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  invoices      Invoice[]
+  @@index([userId])
+}
+
+model Invoice {
+  id            String      @id @default(cuid())
+  invoiceNumber String      @unique
+  status        InvoiceStatus @default(DRAFT)
+  issueDate     DateTime    @default(now())
+  dueDate       DateTime
+  subtotal      Decimal     @db.Decimal(10, 2)
+  tax           Decimal     @db.Decimal(10, 2)
+  total         Decimal     @db.Decimal(10, 2)
+  notes         String?
+  terms         String?
+  customerId    String
+  customer      Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  items         InvoiceItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([customerId])
+}
+
+model InvoiceItem {
+  id          String    @id @default(cuid())
+  description String
+  quantity    Int
+  unitPrice   Decimal   @db.Decimal(10, 2)
+  amount      Decimal   @db.Decimal(10, 2)
+  invoiceId   String
+  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([invoiceId])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
 }
