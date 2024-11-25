@@ -56,4 +56,37 @@ export async function getCustomers() {
     console.error("[GET_CUSTOMERS_ERROR]", error)
     return { success: false, error: "Failed to fetch customers" }
   }
+}
+
+export async function deleteCustomer(customerId: string) {
+  try {
+    const session = await getCurrentUser()
+    
+    if (!session) {
+      throw new Error("Unauthorized")
+    }
+
+    // First verify the customer belongs to the user
+    const customer = await prisma.customer.findFirst({
+      where: {
+        id: customerId,
+        userId: session.id
+      }
+    })
+
+    if (!customer) {
+      throw new Error("Customer not found")
+    }
+
+    await prisma.customer.delete({
+      where: {
+        id: customerId
+      }
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("[DELETE_CUSTOMER_ERROR]", error)
+    return { success: false, error: "Failed to delete customer" }
+  }
 } 
