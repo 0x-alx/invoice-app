@@ -6,7 +6,7 @@ export const metadata = {
   description: "Modern invoice management system",
 }
 
-export const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+export default function AuthLayout({ children }: { children: React.ReactNode }){
   return (
     <>
         <div className="min-h-screen">
@@ -16,5 +16,3 @@ export const AuthLayout = ({ children }: { children: React.ReactNode }) => {
      </>
   )
 }
-
-export default AuthLayout
