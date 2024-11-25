@@ -3,6 +3,8 @@ import { cookies } from 'next/headers'
 import { cache } from 'react'
 import { prisma } from './prisma'
 
+export const dynamic = 'force-dynamic'
+
 type JWTPayload = {
   userId: string
   email: string

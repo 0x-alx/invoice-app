@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { Sidebar } from "@/components/sidebar";
 import { getCurrentUser } from '@/lib/auth';
 import { Loader2 } from 'lucide-react';
