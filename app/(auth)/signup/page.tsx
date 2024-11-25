@@ -31,7 +31,7 @@ const signupSchema = z.object({
 
 type SignupForm = z.infer<typeof signupSchema>
 
-export const SignupPage = () => {
+export default function SignupPage() {
   const [error, setError] = useState<string>('')
   
   const form = useForm<SignupForm>({
@@ -170,6 +170,3 @@ export const SignupPage = () => {
     </div>
   )
 }
-
-export default SignupPage
-
