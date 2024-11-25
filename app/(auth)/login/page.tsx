@@ -60,7 +60,7 @@ export const LoginPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center p-4 z-10">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Image
