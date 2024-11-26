@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { CreateCustomerModal } from "./create-customer-modal";
 
-export function CustomersHeader() {
+export const CustomersHeader = () => {
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
@@ -10,10 +9,7 @@ export function CustomersHeader() {
           Manage your customer relationships
         </p>
       </div>
-      <Button className="w-full md:w-auto">
-        <Plus className="mr-2 h-4 w-4" />
-        Add Customer
-      </Button>
+      <CreateCustomerModal />
     </div>
   );
 }

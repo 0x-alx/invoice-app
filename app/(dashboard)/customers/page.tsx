@@ -1,11 +1,20 @@
-import { CustomersHeader } from "@/components/customers/customers-header";
-import { CustomersTable } from "@/components/customers/customers-table";
+import { getCustomers } from "@/app/actions/customers"
+import { CustomersHeader } from "@/components/customers/customers-header"
+import { CustomersTable } from "@/components/customers/customers-table"
+import { TableSkeleton } from "@/components/skeletons/table-skeleton"
+import { Suspense } from "react"
 
-export default function CustomersPage() {
+export const revalidate = 0
+
+export default async function CustomersPage() {
+  const { data: customers, success } = await getCustomers()
+  
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+    <div className="flex flex-col gap-5 p-6">
       <CustomersHeader />
-      <CustomersTable />
+      <Suspense fallback={<TableSkeleton />}>
+        <CustomersTable customers={customers ?? []} />
+      </Suspense>
     </div>
-  );
+  )
 }
