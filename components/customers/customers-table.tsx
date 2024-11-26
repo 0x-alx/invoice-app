@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteCustomer } from "@/app/actions/customers";
+import { deleteCustomer, updateCustomer } from "@/app/actions/customers";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,10 @@ import {
 import { Pencil, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Input } from "../ui/input";
 
 type Customer = {
   id: string
@@ -42,9 +45,19 @@ type CustomersTableProps = {
 export const CustomersTable = ({ customers }: CustomersTableProps) => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null)
+  const [customerToUpdate, setCustomerToUpdate] = useState<Customer | null>(null)
+  const [isUpdating, setIsUpdating] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const router = useRouter()
 
+  const form = useForm({
+    defaultValues: {
+      name: customerToUpdate?.name || "",
+      email: customerToUpdate?.email || "",
+      phone: customerToUpdate?.phone || "",
+    }
+  })
+  console.log(customerToUpdate)
   const handleDelete = async () => {
     if (!customerToDelete || !confirmDelete) return
 
@@ -67,9 +80,34 @@ export const CustomersTable = ({ customers }: CustomersTableProps) => {
     }
   }
 
+
+  const handleUpdate = async () => {
+    if (!customerToUpdate) return
+
+    try {
+      setIsUpdating(true)
+      const result = await updateCustomer(customerToUpdate.id, form.getValues())
+
+      if (!result.success) {
+        throw new Error(result.error)
+      }
+
+      toast.success("Customer updated successfully")
+      router.refresh()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to update customer")
+    } finally {
+      setIsUpdating(false)
+      setCustomerToUpdate(null)
+      form.reset()
+    }
+  }
+
   const resetModal = () => {
     setCustomerToDelete(null)
     setConfirmDelete(false)
+    setCustomerToUpdate(null)
+    form.reset()
   }
 
   return (
@@ -130,7 +168,7 @@ export const CustomersTable = ({ customers }: CustomersTableProps) => {
                 </TableCell>
                 <TableCell className="w-[100px] relative p-0">
                   <div className="invisible absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 group-hover:visible">
-                    <Button variant="outline" size="icon">
+                    <Button variant="outline" size="icon" onClick={() => setCustomerToUpdate(customer)} >
                       <Pencil className="w-4 h-4 content-center" />
                   </Button>
                   <Button variant="outline" size="icon" className="hover:bg-red-500/10" onClick={() => setCustomerToDelete(customer)}>
@@ -208,6 +246,75 @@ export const CustomersTable = ({ customers }: CustomersTableProps) => {
               disabled={!confirmDelete || isDeleting}
             >
               {isDeleting ? "Deleting..." : "Delete Customer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!customerToUpdate} onOpenChange={(open) => !open && resetModal()}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Update Customer</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleUpdate)}>
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input defaultValue={customerToUpdate?.name || ""} placeholder="John Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input defaultValue={customerToUpdate?.email || ""} placeholder="john@doe.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  defaultValue={customerToUpdate?.phone || ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone</FormLabel>
+                      <FormControl>
+                        <Input placeholder="123-456-7890" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </form>
+          </Form>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={resetModal}
+              disabled={isUpdating}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpdate}
+              disabled={isUpdating}
+            >
+              {isUpdating ? "Updating..." : "Update Customer"}
             </Button>
           </DialogFooter>
         </DialogContent>

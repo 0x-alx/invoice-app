@@ -90,3 +90,26 @@ export async function deleteCustomer(customerId: string) {
     return { success: false, error: "Failed to delete customer" }
   }
 } 
+
+export async function updateCustomer(customerId: string, formData: z.infer<typeof customerSchema>) {
+  try {
+    const session = await getCurrentUser()
+    
+    if (!session) {
+      throw new Error("Unauthorized")
+    }
+
+    const validatedFields = customerSchema.parse(formData)
+    console.log(validatedFields)
+    await prisma.customer.update({
+      where: { id: customerId },
+      data: validatedFields,
+    })
+
+    return { success: true }
+
+  } catch (error) {
+    console.error("[UPDATE_CUSTOMER_ERROR]", error)
+    return { success: false, error: "Failed to update customer" }
+  }
+}
