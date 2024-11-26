@@ -1,7 +1,7 @@
 # Invoice Pro - Tableau de Bord de Gestion de Factures Moderne
 
 <div align="center">
-  <img src="public/assets/logo.png" alt="Logo Invoice Pro" width="200"/>
+  <img src="public/assets/logo-light.svg" alt="Logo Invoice Pro" width="200"/>
   <p>Un système de gestion de factures moderne, sécurisé et intuitif construit avec Next.js 14</p>
 </div>
 
