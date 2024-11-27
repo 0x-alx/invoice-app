@@ -25,7 +25,16 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export async function InvoicesTable({ invoices }: { invoices: Invoice[] }) {
+type InvoicesTableProps = {
+  invoices: (Invoice & {
+    customer: {
+      name: string
+      email: string
+    }
+  })[]
+}
+
+export async function InvoicesTable({ invoices }: InvoicesTableProps) {
   return (
     <Card>
       <Table>
@@ -48,7 +57,7 @@ export async function InvoicesTable({ invoices }: { invoices: Invoice[] }) {
                   <p className="text-sm text-muted-foreground">{invoice.customer.email}</p>
                 </div>
               </TableCell>
-              <TableCell>{invoice.total}</TableCell>
+              <TableCell>${invoice.total}</TableCell>
               <TableCell>
                 <Badge className={getStatusColor(invoice.status)} variant="secondary">
                   {invoice.status}
