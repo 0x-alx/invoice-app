@@ -1,5 +1,7 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -8,51 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-
-const invoices = [
-  {
-    id: "INV001",
-    customer: "Alex Thompson",
-    email: "alex@example.com",
-    amount: "$1,999.00",
-    status: "Paid",
-    date: "Mar 12, 2024",
-  },
-  {
-    id: "INV002",
-    customer: "Sarah Wilson",
-    email: "sarah@example.com",
-    amount: "$1,499.00",
-    status: "Pending",
-    date: "Mar 11, 2024",
-  },
-  {
-    id: "INV003",
-    customer: "Michael Chen",
-    email: "michael@example.com",
-    amount: "$2,999.00",
-    status: "Paid",
-    date: "Mar 10, 2024",
-  },
-  {
-    id: "INV004",
-    customer: "Emma Davis",
-    email: "emma@example.com",
-    amount: "$999.00",
-    status: "Overdue",
-    date: "Mar 09, 2024",
-  },
-  {
-    id: "INV005",
-    customer: "James Wilson",
-    email: "james@example.com",
-    amount: "$2,499.00",
-    status: "Paid",
-    date: "Mar 08, 2024",
-  },
-];
+import { Invoice } from "@prisma/client";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -67,7 +25,7 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export function InvoicesTable() {
+export async function InvoicesTable({ invoices }: { invoices: Invoice[] }) {
   return (
     <Card>
       <Table>
@@ -83,20 +41,20 @@ export function InvoicesTable() {
         <TableBody>
           {invoices.map((invoice) => (
             <TableRow key={invoice.id}>
-              <TableCell className="font-medium">{invoice.id}</TableCell>
+              <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
               <TableCell>
                 <div>
-                  <p className="font-medium">{invoice.customer}</p>
-                  <p className="text-sm text-muted-foreground">{invoice.email}</p>
+                  <p className="font-medium">{invoice.customer.name}</p>
+                  <p className="text-sm text-muted-foreground">{invoice.customer.email}</p>
                 </div>
               </TableCell>
-              <TableCell>{invoice.amount}</TableCell>
+              <TableCell>{invoice.total}</TableCell>
               <TableCell>
                 <Badge className={getStatusColor(invoice.status)} variant="secondary">
                   {invoice.status}
                 </Badge>
               </TableCell>
-              <TableCell>{invoice.date}</TableCell>
+              <TableCell>{invoice.createdAt.toLocaleDateString()}</TableCell>
             </TableRow>
           ))}
         </TableBody>

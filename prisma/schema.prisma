@@ -37,17 +37,14 @@ model Customer {
 model Invoice {
   id            String      @id @default(cuid())
   invoiceNumber String      @unique
-  status        InvoiceStatus @default(DRAFT)
-  issueDate     DateTime    @default(now())
-  dueDate       DateTime
-  subtotal      Decimal     @db.Decimal(10, 2)
-  tax           Decimal     @db.Decimal(10, 2)
-  total         Decimal     @db.Decimal(10, 2)
-  notes         String?
-  terms         String?
   customerId    String
-  customer      Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer      Customer    @relation(fields: [customerId], references: [id])
   items         InvoiceItem[]
+  subtotal      Float
+  tax           Float
+  total         Float
+  status        InvoiceStatus
+  dueDate       DateTime
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
@@ -56,12 +53,12 @@ model Invoice {
 
 model InvoiceItem {
   id          String    @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice   @relation(fields: [invoiceId], references: [id])
   description String
   quantity    Int
-  unitPrice   Decimal   @db.Decimal(10, 2)
-  amount      Decimal   @db.Decimal(10, 2)
-  invoiceId   String
-  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  unitPrice   Float
+  total       Float
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -70,8 +67,7 @@ model InvoiceItem {
 
 enum InvoiceStatus {
   DRAFT
-  SENT
+  PENDING
   PAID
-  OVERDUE
   CANCELLED
 }
