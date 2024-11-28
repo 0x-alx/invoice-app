@@ -1,6 +1,8 @@
 "use client";
 
+import { generateInvoicePDF } from '@/app/actions/generate-pdf';
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -10,7 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Invoice } from "@prisma/client";
+import { Invoice } from '@prisma/client';
+import { Download, Eye, Trash } from "lucide-react";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -28,13 +31,22 @@ const getStatusColor = (status: string) => {
 type InvoicesTableProps = {
   invoices: (Invoice & {
     customer: {
-      name: string
-      email: string
-    }
+      name: string;
+      email: string;
+      phone: string | null;
+    };
+    items: {
+      id: string;
+      description: string;
+      quantity: number;
+      unitPrice: number;
+      // Add any other item fields you need
+    }[];
   })[]
 }
 
-export async function InvoicesTable({ invoices }: InvoicesTableProps) {
+export const InvoicesTable = ({ invoices }: InvoicesTableProps) => {
+  console.log(invoices)
   return (
     <Card>
       <Table>
@@ -45,6 +57,7 @@ export async function InvoicesTable({ invoices }: InvoicesTableProps) {
             <TableHead>Amount</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Date</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -64,6 +77,43 @@ export async function InvoicesTable({ invoices }: InvoicesTableProps) {
                 </Badge>
               </TableCell>
               <TableCell>{invoice.createdAt.toLocaleDateString()}</TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <form onSubmit={async (event) => {
+                    event.preventDefault();
+                    const pdfPath = await generateInvoicePDF({ 
+                      invoice: {
+                        ...invoice,
+                        customer: {
+                          name: invoice.customer.name,
+                          email: invoice.customer.email,
+                          phone: invoice.customer.phone || '',
+                        },
+                        items: invoice.items.map(item => ({
+                          ...item,
+                          total: item.quantity * item.unitPrice
+                        }))
+                      }
+                    });
+                    window.open(pdfPath, '_blank');
+                  }}>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      title="Download PDF"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </form>
+                  <Button variant="outline" size="icon" className="h-8 w-8" title="Edit">
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" className="h-8 w-8" title="Delete">
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

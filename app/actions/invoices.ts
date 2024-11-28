@@ -57,7 +57,15 @@ export const getInvoices = async () => {
   const invoices = await prisma.invoice.findMany({
     include: {
       customer: true,
+      items: true
     },  
   })
   return invoices
+}
+
+export const getInvoiceById = async (id: string) => {
+  const invoice = await prisma.invoice.findUnique({
+    where: { id },
+  })
+  return invoice
 }
