@@ -44,7 +44,7 @@ model Invoice {
   subtotal      Float
   tax           Float
   total         Float
-  status        InvoiceStatus @default(PENDING)
+  status        String
   dueDate       DateTime
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
@@ -64,11 +64,4 @@ model InvoiceItem {
   updatedAt   DateTime @updatedAt
 
   @@index([invoiceId])
-}
-
-enum InvoiceStatus {
-  PENDING
-  PAID
-  OVERDUE
-  CANCELLED
 }

@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client'
-import './db-migrate'  // Importer le fichier de migration
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
