@@ -2,6 +2,7 @@
 
 import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { InvoiceStatus } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
 export type InvoiceFormData = {
@@ -42,7 +43,7 @@ export const createInvoice = async (data: InvoiceFormData) => {
         tax: data.tax,
         total: data.total,
         dueDate: new Date(data.dueDate),
-        status: "PENDING",
+        status: InvoiceStatus.PENDING,
       }
     })
 
