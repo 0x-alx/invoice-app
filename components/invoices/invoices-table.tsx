@@ -106,7 +106,29 @@ export const InvoicesTable = ({ invoices }: InvoicesTableProps) => {
                       <Eye className="h-4 w-4" />
                     </Button>
                   </form>
-                  <Button variant="outline" size="icon" className="h-8 w-8" title="Edit">
+                  <Button variant="outline" size="icon" className="h-8 w-8" title="Download PDF" onClick={async () => {
+                    const pdfPath = await generateInvoicePDF({ 
+                      invoice: {
+                        ...invoice,
+                        customer: {
+                          name: invoice.customer.name,
+                          email: invoice.customer.email,
+                          phone: invoice.customer.phone || '',
+                        },
+                        items: invoice.items.map(item => ({
+                          ...item,
+                          total: item.quantity * item.unitPrice
+                        }))
+                      }
+                    });
+                   // Create an anchor element and trigger download
+                   const link = document.createElement('a');
+                   link.href = pdfPath;
+                   link.download = `invoice-${invoice.invoiceNumber}.pdf`;
+                   document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}>
                     <Download className="h-4 w-4" />
                   </Button>
                   <Button variant="outline" size="icon" className="h-8 w-8" title="Delete">

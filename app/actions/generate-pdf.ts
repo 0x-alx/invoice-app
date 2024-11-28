@@ -83,8 +83,7 @@ export async function generateInvoicePDF({ invoice }: Props) {
     // Create invoice table header
     const invoiceTop = 250;
     doc.fontSize(10)
-       .text('Item', 50, invoiceTop)
-       .text('Description', 150, invoiceTop)
+       .text('Description', 50, invoiceTop)
        .text('Quantity', 280, invoiceTop, { width: 90, align: 'right' })
        .text('Unit Price', 370, invoiceTop, { width: 90, align: 'right' })
        .text('Total', 460, invoiceTop, { width: 90, align: 'right' });
