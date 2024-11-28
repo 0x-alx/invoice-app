@@ -1,5 +1,6 @@
 'use server'
 
+import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
@@ -51,14 +52,25 @@ export const createInvoice = async (data: InvoiceFormData) => {
     console.error("Failed to create invoice:", error)
     return { success: false, error: "Failed to create invoice" }
   }
-} 
+}
 
-export const getInvoices = async () => {
+export const getInvoicesByUserId = async () => {
+  const session = await getCurrentUser()
+
+  if (!session) {
+    throw new Error("Unauthorized")
+  }
+
   const invoices = await prisma.invoice.findMany({
+    where: {
+      customer: {
+        userId: session.id
+      }
+    },
     include: {
       customer: true,
       items: true
-    },  
+    },
   })
   return invoices
 }
