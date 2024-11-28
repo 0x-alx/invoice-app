@@ -21,6 +21,7 @@ export type InvoiceFormData = {
 }
 
 export const createInvoice = async (data: InvoiceFormData) => {
+  console.log(InvoiceStatus)
   try {
     const items = data.items.map(item => ({
       description: item.description,
@@ -43,6 +44,7 @@ export const createInvoice = async (data: InvoiceFormData) => {
         tax: data.tax,
         total: data.total,
         dueDate: new Date(data.dueDate),
+        status: "pending" as const,
       }
     })
 
