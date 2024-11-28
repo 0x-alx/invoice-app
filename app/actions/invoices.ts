@@ -43,7 +43,7 @@ export const createInvoice = async (data: InvoiceFormData) => {
         tax: data.tax,
         total: data.total,
         dueDate: new Date(data.dueDate),
-        status: InvoiceStatus.PENDING,
+        status: "pending",
       }
     })
 
