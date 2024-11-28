@@ -81,3 +81,25 @@ export const getInvoiceById = async (id: string) => {
   })
   return invoice
 }
+
+export const deleteInvoice = async (id: string) => {
+  try {
+    // Supprimer d'abord tous les éléments de la facture
+    await prisma.invoiceItem.deleteMany({
+      where: {
+        invoiceId: id
+      }
+    })
+
+    // Ensuite, supprimer la facture
+    await prisma.invoice.delete({
+      where: { id },
+    })
+
+    revalidatePath("/invoices")
+    return { success: true }
+  } catch (error) {
+    console.error("Failed to delete invoice:", error)
+    return { success: false, error: "Failed to delete invoice" }
+  }
+}

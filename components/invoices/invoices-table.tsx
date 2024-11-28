@@ -1,6 +1,7 @@
 "use client";
 
 import { generateInvoicePDF } from "@/app/actions/generate-pdf";
+import { deleteInvoice } from "@/app/actions/invoices";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -194,6 +195,9 @@ export const InvoicesTable = ({ invoices }: InvoicesTableProps) => {
 											size='icon'
 											className='h-8 w-8'
 											title='Delete'
+											onClick={async () => {
+												await deleteInvoice(invoice.id);
+											}}
 										>
 											<Trash className='h-4 w-4' />
 										</Button>
