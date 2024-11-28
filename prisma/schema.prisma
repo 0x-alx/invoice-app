@@ -44,7 +44,7 @@ model Invoice {
   subtotal      Float
   tax           Float
   total         Float
-  status        InvoiceStatus @default(pending)
+  status        InvoiceStatus @default(PENDING)
   dueDate       DateTime
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
@@ -67,8 +67,8 @@ model InvoiceItem {
 }
 
 enum InvoiceStatus {
-  pending
-  paid
-  overdue
-  cancelled
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
 }
