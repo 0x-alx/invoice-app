@@ -35,6 +35,13 @@ model Customer {
   @@index([userId])
 }
 
+enum InvoiceStatus {
+  DRAFT
+  PENDING
+  PAID
+  CANCELLED
+}
+
 model Invoice {
   id            String        @id @default(cuid())
   invoiceNumber String        @unique
@@ -44,7 +51,7 @@ model Invoice {
   subtotal      Float
   tax           Float
   total         Float
-  status        String
+  status        InvoiceStatus @default(DRAFT)
   dueDate       DateTime
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
