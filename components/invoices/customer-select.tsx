@@ -2,20 +2,21 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
 } from "@/components/ui/command";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
+import { CreateCustomerModal } from "../customers/create-customer-modal";
 
 type Customer = {
   id: string;
@@ -26,14 +27,12 @@ type CustomerSelectProps = {
   customers: Customer[];
   value?: string;
   onValueChange: (value: string) => void;
-  onAddNewClick: () => void;
 };
 
 export const CustomerSelect = ({
   customers,
   value,
   onValueChange,
-  onAddNewClick,
 }: CustomerSelectProps) => {
   const [open, setOpen] = useState(false);
   const selectedCustomer = customers.find((customer) => customer.id === value);
@@ -79,15 +78,7 @@ export const CustomerSelect = ({
           </Command>
         </PopoverContent>
       </Popover>
-      <Button
-        variant="outline"
-        size="icon"
-        type="button"
-        onClick={onAddNewClick}
-        className="shrink-0"
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
+      <CreateCustomerModal />
     </div>
   );
 }; 

@@ -1,154 +1,112 @@
 'use server'
 
-import { getCurrentUser } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { InvoiceStatus } from '@prisma/client'
-import { revalidatePath } from 'next/cache'
-
-export type InvoiceItemData = {
-  description: string
-  quantity: number
-  unitPrice: number
-  amount: number
-}
+import { getCurrentUser } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
+import { revalidatePath } from "next/cache"
 
 export type InvoiceFormData = {
+  customerId: string
   invoiceNumber: string
-  status?: InvoiceStatus
-  dueDate: Date
+  items: {
+    description: string
+    quantity: number
+    unitPrice: number
+    total: number
+  }[]
   subtotal: number
   tax: number
   total: number
-  notes?: string
-  terms?: string
-  customerId: string
-  items: InvoiceItemData[]
+  dueDate: string
 }
 
-export async function getInvoices() {
+export const createInvoice = async (data: InvoiceFormData) => {
   try {
-    const user = await getCurrentUser()
-    if (!user) throw new Error('Unauthorized')
-
-    return await prisma.invoice.findMany({
-      where: {
-        customer: {
-          userId: user.id
-        }
-      },
-      include: {
-        customer: true,
-        items: true
-      },
-      orderBy: { createdAt: 'desc' }
-    })
-  } catch (error) {
-    throw new Error('Failed to fetch invoices')
-  }
-}
-
-export async function getInvoice(id: string) {
-  try {
-    const user = await getCurrentUser()
-    if (!user) throw new Error('Unauthorized')
-
-    const invoice = await prisma.invoice.findFirst({
-      where: {
-        id,
-        customer: {
-          userId: user.id
-        }
-      },
-      include: {
-        customer: true,
-        items: true
-      }
-    })
-
-    if (!invoice) throw new Error('Invoice not found')
-    return invoice
-  } catch (error) {
-    throw new Error('Failed to fetch invoice')
-  }
-}
-
-export async function createInvoice(data: InvoiceFormData) {
-  try {
-    const user = await getCurrentUser()
-    if (!user) throw new Error('Unauthorized')
-
-    // Verify customer belongs to user
-    const customer = await prisma.customer.findUnique({
-      where: { 
-        id: data.customerId,
-        userId: user.id
-      }
-    })
-
-    if (!customer) throw new Error('Customer not found')
+    const items = data.items.map(item => ({
+      description: item.description,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      total: item.total
+    }))
 
     const invoice = await prisma.invoice.create({
       data: {
-        ...data,
+        customerId: data.customerId,
+        invoiceNumber: data.invoiceNumber,
         items: {
-          create: data.items
-        }
-      },
-      include: {
-        items: true,
-        customer: true
+          create: items.map(item => ({
+            ...item,
+            total: item.total
+          }))
+        },
+        subtotal: data.subtotal,
+        tax: data.tax,
+        total: data.total,
+        dueDate: new Date(data.dueDate),
+        status: "PENDING",
       }
     })
 
-    revalidatePath('/invoices')
-    return invoice
+    revalidatePath("/invoices")
+    return { success: true, data: invoice }
   } catch (error) {
-    throw new Error('Failed to create invoice')
+    console.error("Failed to create invoice:", error)
+    return { success: false, error: "Failed to create invoice" }
   }
 }
 
-export async function updateInvoice(id: string, data: Partial<InvoiceFormData>) {
+export const getInvoicesByUserId = async () => {
+  const session = await getCurrentUser()
+
+  if (!session) {
+    throw new Error("Unauthorized")
+  }
+
+  const invoices = await prisma.invoice.findMany({
+    where: {
+      customer: {
+        userId: session.id
+      }
+    },
+    include: {
+      customer: true,
+      items: true
+    },
+  })
+  return invoices
+}
+
+export const getInvoiceById = async (id: string) => {
+  const invoice = await prisma.invoice.findUnique({
+    where: { id },
+  })
+  return invoice
+}
+
+export const deleteInvoice = async (id: string) => {
   try {
-    const user = await getCurrentUser()
-    if (!user) throw new Error('Unauthorized')
-
-    const { items, ...invoiceData } = data
-
-    const invoice = await prisma.invoice.update({
-      where: { id },
-      data: {
-        ...invoiceData,
-        items: items ? {
-          deleteMany: {},
-          create: items
-        } : undefined
-      },
-      include: {
-        items: true,
-        customer: true
+    // Supprimer d'abord tous les éléments de la facture
+    await prisma.invoiceItem.deleteMany({
+      where: {
+        invoiceId: id
       }
     })
 
-    revalidatePath('/invoices')
-    revalidatePath(`/invoices/${id}`)
-    return invoice
-  } catch (error) {
-    throw new Error('Failed to update invoice')
-  }
-}
-
-export async function deleteInvoice(id: string) {
-  try {
-    const user = await getCurrentUser()
-    if (!user) throw new Error('Unauthorized')
-
+    // Ensuite, supprimer la facture
     await prisma.invoice.delete({
-      where: { id }
+      where: { id },
     })
 
-    revalidatePath('/invoices')
+    revalidatePath("/invoices")
     return { success: true }
   } catch (error) {
-    throw new Error('Failed to delete invoice')
+    console.error("Failed to delete invoice:", error)
+    return { success: false, error: "Failed to delete invoice" }
   }
-} 
+}
+
+export const getInvoiceByCustomerId = async (customerId: string) => {
+  const invoices = await prisma.invoice.findMany({
+    where: { customerId }
+  })
+  return invoices
+}

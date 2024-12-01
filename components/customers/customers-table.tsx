@@ -20,8 +20,9 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table";
+import { Invoice } from "@prisma/client";
 import { Pencil, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -36,13 +37,14 @@ type Customer = {
   email: string
   phone?: string | null
   createdAt: Date
+  invoices: Invoice[]
 }
 
 type CustomersTableProps = {
   customers: Customer[]
 }
 
-export const CustomersTable = ({ customers }: CustomersTableProps) => {
+export const CustomersTable = async ({ customers }: CustomersTableProps) => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null)
   const [customerToUpdate, setCustomerToUpdate] = useState<Customer | null>(null)
@@ -57,8 +59,11 @@ export const CustomersTable = ({ customers }: CustomersTableProps) => {
       phone: customerToUpdate?.phone || "",
     }
   })
-  console.log(customerToUpdate)
-  const handleDelete = async () => {
+  
+  const totalSpentByCustomer = (customer: Customer) => customer.invoices?.reduce((acc, invoice) => acc + invoice.total, 0)
+  
+ 
+    const handleDelete = async () => {
     if (!customerToDelete || !confirmDelete) return
 
     try {
@@ -155,10 +160,10 @@ export const CustomersTable = ({ customers }: CustomersTableProps) => {
                 </div>
               </TableCell>
                 <TableCell className="hidden md:table-cell">
-                $12,499.00
+                {customer.invoices ? `$${totalSpentByCustomer(customer).toFixed(2)}` : '-'}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  8
+                  {customer.invoices ? customer.invoices.length : '-'}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   Mar 11, 2024

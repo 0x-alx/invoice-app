@@ -11,67 +11,64 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  password      String
-  firstName     String?
-  lastName      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  customers     Customer[]
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  firstName String?
+  lastName  String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  customers Customer[]
 }
 
 model Customer {
-  id            String    @id @default(cuid())
-  name          String
-  email         String
-  phone         String?
-  userId        String
-  user          User      @relation(fields: [userId], references: [id])
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  invoices      Invoice[]
+  id        String    @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  invoices  Invoice[]
+
   @@index([userId])
 }
 
+enum InvoiceStatus {
+  DRAFT
+  PENDING
+  PAID
+  CANCELLED
+}
+
 model Invoice {
-  id            String      @id @default(cuid())
-  invoiceNumber String      @unique
-  status        InvoiceStatus @default(DRAFT)
-  issueDate     DateTime    @default(now())
-  dueDate       DateTime
-  subtotal      Decimal     @db.Decimal(10, 2)
-  tax           Decimal     @db.Decimal(10, 2)
-  total         Decimal     @db.Decimal(10, 2)
-  notes         String?
-  terms         String?
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
   customerId    String
-  customer      Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer      Customer      @relation(fields: [customerId], references: [id])
   items         InvoiceItem[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  subtotal      Float
+  tax           Float
+  total         Float
+  status        InvoiceStatus @default(DRAFT)
+  dueDate       DateTime
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@index([customerId])
 }
 
 model InvoiceItem {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id])
   description String
   quantity    Int
-  unitPrice   Decimal   @db.Decimal(10, 2)
-  amount      Decimal   @db.Decimal(10, 2)
-  invoiceId   String
-  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  unitPrice   Float
+  total       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([invoiceId])
-}
-
-enum InvoiceStatus {
-  DRAFT
-  SENT
-  PAID
-  OVERDUE
-  CANCELLED
 }
