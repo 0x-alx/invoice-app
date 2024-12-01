@@ -103,3 +103,10 @@ export const deleteInvoice = async (id: string) => {
     return { success: false, error: "Failed to delete invoice" }
   }
 }
+
+export const getInvoiceByCustomerId = async (customerId: string) => {
+  const invoices = await prisma.invoice.findMany({
+    where: { customerId }
+  })
+  return invoices
+}

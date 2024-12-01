@@ -145,9 +145,6 @@ export const CreateInvoiceModal = () => {
                     customers={customers}
                     value={field.value}
                     onValueChange={field.onChange}
-                    onAddNewClick={() => {
-                      console.log('Add new customer clicked');
-                    }}
                   />
                 </FormControl>
                 <FormMessage />

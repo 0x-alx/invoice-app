@@ -48,6 +48,9 @@ export async function getCustomers() {
       },
       orderBy: {
         createdAt: 'desc'
+      },
+      include: {
+        invoices: true
       }
     })
 
