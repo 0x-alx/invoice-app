@@ -1,5 +1,6 @@
 'use server'
 
+import { getCurrentUser } from '@/lib/auth';
 import { Invoice } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
@@ -38,7 +39,7 @@ function ensureHelveticaAFM() {
 // Create the PDF document
 export async function generateInvoicePDF({ invoice }: Props) {
     ensureHelveticaAFM()
-
+    const user = await getCurrentUser()
     console.log(invoice)
     // Create a unique filename using the invoice ID
     const fileName = `invoice-${invoice.id}.pdf`;
@@ -59,11 +60,11 @@ export async function generateInvoicePDF({ invoice }: Props) {
 
     // Add company logo/header
     doc.fontSize(20)
-       .text('Your Company Name', 50, 50)
+       .text(`${user?.companyName}`, 50, 50)
        .fontSize(10)
-       .text('123 Business Street', 50, 75)
-       .text('City, State 12345', 50, 90)
-       .text('Phone: (555) 555-5555', 50, 105);
+       .text(`${user?.address}`, 50, 75)
+       .text(`${user?.postalCode} ${user?.city}`, 50, 90)
+       .text(`Phone: ${user?.phone}`, 50, 105);
 
     // Add invoice details
     doc.fontSize(16)

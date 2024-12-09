@@ -18,7 +18,14 @@ export async function getCurrentUser() {
         id: true,
         email: true,
         firstName: true,
-        lastName: true
+        lastName: true,
+        companyName: true,
+        address: true,
+        city: true,
+        postalCode: true, 
+        country: true,
+        phone: true,
+        vatNumber: true,
       }
     })
 

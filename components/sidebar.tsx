@@ -6,16 +6,14 @@ import {
   FileText,
   LayoutDashboard,
   LogOut,
-  PieChart,
-  Receipt,
-  Settings,
-  Users,
+  PieChart, Settings,
+  Users
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-
 const sidebarLinks = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Invoices", href: "/invoices", icon: FileText },
@@ -35,8 +33,7 @@ export function Sidebar() {
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-[60px] items-center border-b px-6">
           <Link className="flex items-center gap-2 font-semibold" href="/">
-            <Receipt className="h-6 w-6" />
-            <span>Invoice Pro</span>
+            <Image src='/assets/logo-light.svg' alt='Logo' width={40} height={40} />
                 <ThemeToggle />
           </Link>
         </div>

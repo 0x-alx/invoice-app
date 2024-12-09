@@ -64,10 +64,10 @@ export default function LoginPage() {
 			<div className='w-full max-w-md space-y-8'>
 				<div className='text-center'>
 					<Image
-						src='/assets/printing_invoice.svg'
+						src='/assets/logo-light.svg'
 						alt='Login'
-						width={300}
-						height={300}
+						width={200}
+						height={200}
 						className='mx-auto'
 					/>
 					<h2 className='mt-6 text-3xl font-bold'>Welcome back</h2>

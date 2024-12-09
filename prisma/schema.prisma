@@ -19,6 +19,13 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   customers Customer[]
+  companyName String?
+  address    String?
+  city       String?
+  postalCode String?
+  country    String?
+  phone      String?
+  vatNumber  String?
 }
 
 model Customer {
